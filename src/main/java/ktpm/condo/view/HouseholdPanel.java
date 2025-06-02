@@ -16,14 +16,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
-import ktpm.condo.model.dao.HouseholdDAO;
 import ktpm.condo.model.entity.Household;
+import ktpm.condo.model.service.HouseholdService;
 
 /**
  * Giao diện Swing để quản lý danh sách hộ khẩu trong hệ thống.
  */
 public class HouseholdPanel extends JPanel {
-    private final HouseholdDAO dao = new HouseholdDAO();
+    private final HouseholdService service = new HouseholdService();
     private JTable table;
     private DefaultTableModel tableModel;
 
@@ -40,8 +40,8 @@ public class HouseholdPanel extends JPanel {
         JPanel buttonPanel = new JPanel();
         JButton btnAdd = new JButton("Thêm hộ");
         JButton btnDelete = new JButton("Xoá hộ");
-        JButton btnRefresh = new JButton("Làm mới");
         JButton btnViewCitizens = new JButton("Xem nhân khẩu");
+        JButton btnRefresh = new JButton("Làm mới");
 
         buttonPanel.add(btnAdd);
         buttonPanel.add(btnDelete);
@@ -49,22 +49,18 @@ public class HouseholdPanel extends JPanel {
         buttonPanel.add(btnRefresh);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Gán sự kiện
+        // Sự kiện
         btnAdd.addActionListener(e -> addHousehold());
         btnDelete.addActionListener(e -> deleteSelected());
-        btnRefresh.addActionListener(e -> loadData());
         btnViewCitizens.addActionListener(e -> viewCitizens());
+        btnRefresh.addActionListener(e -> loadData());
 
-        // Load dữ liệu ban đầu
         loadData();
     }
 
-    /**
-     * Tải lại dữ liệu từ CSDL lên bảng.
-     */
     private void loadData() {
         tableModel.setRowCount(0);
-        List<Household> households = dao.getAllHouseholds();
+        List<Household> households = service.getAll();
         for (Household h : households) {
             tableModel.addRow(new Object[]{
                 h.getId(),
@@ -75,9 +71,6 @@ public class HouseholdPanel extends JPanel {
         }
     }
 
-    /**
-     * Mở form thêm hộ khẩu mới.
-     */
     private void addHousehold() {
         JTextField tfApartment = new JTextField();
         JTextField tfCode = new JTextField();
@@ -98,32 +91,29 @@ public class HouseholdPanel extends JPanel {
                 h.setApartmentNumber(tfApartment.getText());
                 h.setHouseholdCode(tfCode.getText());
                 h.setNumberOfMembers(Integer.parseInt(tfMembers.getText()));
-                if (dao.addHousehold(h)) {
+                if (service.add(h)) {
                     JOptionPane.showMessageDialog(this, "Đã thêm thành công.");
                     loadData();
                 } else {
                     JOptionPane.showMessageDialog(this, "Thêm thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Số thành viên phải là số nguyên.", "Lỗi nhập liệu", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Số thành viên phải là số.", "Lỗi nhập", JOptionPane.WARNING_MESSAGE);
             }
         }
     }
 
-    /**
-     * Xoá hộ khẩu được chọn.
-     */
     private void deleteSelected() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow != -1) {
             int id = (int) tableModel.getValueAt(selectedRow, 0);
-            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xoá hộ khẩu này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+            int confirm = JOptionPane.showConfirmDialog(this, "Xoá hộ khẩu này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                if (dao.deleteHousehold(id)) {
+                if (service.delete(id)) {
                     JOptionPane.showMessageDialog(this, "Đã xoá.");
                     loadData();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Xoá thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Không thể xoá.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } else {
@@ -131,9 +121,6 @@ public class HouseholdPanel extends JPanel {
         }
     }
 
-    /**
-     * Hiển thị danh sách nhân khẩu của hộ khẩu đang chọn.
-     */
     private void viewCitizens() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow != -1) {

@@ -14,17 +14,17 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import ktpm.condo.model.dao.CitizenDAO;
 import ktpm.condo.model.entity.Citizen;
+import ktpm.condo.model.service.CitizenService;
 
 /**
- * Panel quản lý nhân khẩu thuộc một hộ khẩu cụ thể.
+ * Giao diện Swing để quản lý nhân khẩu thuộc một hộ khẩu cụ thể.
  */
 public class CitizenPanel extends JPanel {
+    private final CitizenService service = new CitizenService();
+    private final int householdId;
     private JTable table;
     private DefaultTableModel tableModel;
-    private final CitizenDAO dao = new CitizenDAO();
-    private final int householdId;
 
     public CitizenPanel(int householdId) {
         this.householdId = householdId;
@@ -34,10 +34,9 @@ public class CitizenPanel extends JPanel {
         table = new JTable(tableModel);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
+        JPanel btnPanel = new JPanel();
         JButton btnAdd = new JButton("Thêm nhân khẩu");
         JButton btnDelete = new JButton("Xoá nhân khẩu");
-
-        JPanel btnPanel = new JPanel();
         btnPanel.add(btnAdd);
         btnPanel.add(btnDelete);
         add(btnPanel, BorderLayout.SOUTH);
@@ -50,15 +49,15 @@ public class CitizenPanel extends JPanel {
 
     private void loadData() {
         tableModel.setRowCount(0);
-        List<Citizen> list = dao.getCitizensByHouseholdId(householdId);
+        List<Citizen> list = service.getByHousehold(householdId);
         for (Citizen c : list) {
             tableModel.addRow(new Object[]{
-                    c.getId(),
-                    c.getName(),
-                    c.getDateOfBirth(),
-                    c.getGender(),
-                    c.getJob(),
-                    c.getRelationshipToHead()
+                c.getId(),
+                c.getName(),
+                c.getDateOfBirth(),
+                c.getGender(),
+                c.getJob(),
+                c.getRelationshipToHead()
             });
         }
     }
@@ -84,19 +83,23 @@ public class CitizenPanel extends JPanel {
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Thêm nhân khẩu", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
-            Citizen c = new Citizen();
-            c.setHouseholdId(householdId);
-            c.setName(tfName.getText());
-            c.setDateOfBirth(LocalDate.parse(tfDOB.getText()));
-            c.setGender(tfGender.getText());
-            c.setJob(tfJob.getText());
-            c.setRelationshipToHead(tfRelation.getText());
+            try {
+                Citizen c = new Citizen();
+                c.setHouseholdId(householdId);
+                c.setName(tfName.getText());
+                c.setDateOfBirth(LocalDate.parse(tfDOB.getText()));
+                c.setGender(tfGender.getText());
+                c.setJob(tfJob.getText());
+                c.setRelationshipToHead(tfRelation.getText());
 
-            if (dao.addCitizen(c)) {
-                JOptionPane.showMessageDialog(this, "Đã thêm.");
-                loadData();
-            } else {
-                JOptionPane.showMessageDialog(this, "Lỗi thêm.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                if (service.add(c)) {
+                    JOptionPane.showMessageDialog(this, "Đã thêm.");
+                    loadData();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Thêm thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Dữ liệu không hợp lệ.", "Lỗi nhập liệu", JOptionPane.WARNING_MESSAGE);
             }
         }
     }
@@ -107,11 +110,11 @@ public class CitizenPanel extends JPanel {
             int id = (int) tableModel.getValueAt(selected, 0);
             int confirm = JOptionPane.showConfirmDialog(this, "Xoá nhân khẩu này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                if (dao.deleteCitizen(id)) {
+                if (service.delete(id)) {
                     JOptionPane.showMessageDialog(this, "Đã xoá.");
                     loadData();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Lỗi xoá.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Không thể xoá.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
