@@ -68,3 +68,18 @@ VALUES
 
   (3, 'Phạm Thị Lan', '1990-08-08', 'Nữ', 'Nhân viên văn phòng', 'Chủ hộ'),
   (3, 'Phạm Văn Long', '2015-06-30', 'Nam', 'Học sinh', 'Con');
+
+-- Chèn các khoản phí cho hộ khẩu ID 1, 2 và 3
+INSERT INTO fee (household_id, type, amount, due_date, status)
+VALUES 
+  (1, 'Phí quản lý', 300000, '2025-06-10', 'Chưa thanh toán'),
+  (1, 'Phí giữ xe', 150000, '2025-06-05', 'Đã thanh toán'),
+  (1, 'Phí vệ sinh', 100000, '2025-06-15', 'Chưa thanh toán'),
+
+  (2, 'Phí quản lý', 300000, '2025-06-10', 'Đã thanh toán'),
+  (2, 'Phí nước', 120000, '2025-06-12', 'Chưa thanh toán'),
+  (2, 'Phí điện', 500000, '2025-06-08', 'Chưa thanh toán'),
+
+  (3, 'Phí giữ xe', 150000, '2025-06-05', 'Đã thanh toán'),
+  (3, 'Phí quản lý', 300000, '2025-06-10', 'Đã thanh toán');
+

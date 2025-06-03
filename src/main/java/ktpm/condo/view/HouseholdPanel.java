@@ -26,37 +26,52 @@ public class HouseholdPanel extends JPanel {
     private final HouseholdService service = new HouseholdService();
     private JTable table;
     private DefaultTableModel tableModel;
+    private final JFrame parentFrame;
 
-    public HouseholdPanel() {
+    /**
+     * Khởi tạo HouseholdPanel kèm tham chiếu JFrame chính.
+     *
+     * @param parentFrame cửa sổ chính để điều hướng
+     */
+    public HouseholdPanel(JFrame parentFrame) {
+        this.parentFrame = parentFrame;
         setLayout(new BorderLayout());
 
-        // Bảng danh sách hộ khẩu
         tableModel = new DefaultTableModel(new Object[]{"ID", "Căn hộ", "Mã hộ", "Số thành viên"}, 0);
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Panel nút chức năng
         JPanel buttonPanel = new JPanel();
         JButton btnAdd = new JButton("Thêm hộ");
         JButton btnDelete = new JButton("Xoá hộ");
         JButton btnViewCitizens = new JButton("Xem nhân khẩu");
         JButton btnRefresh = new JButton("Làm mới");
+        JButton btnBack = new JButton("Quay lại");
 
         buttonPanel.add(btnAdd);
         buttonPanel.add(btnDelete);
         buttonPanel.add(btnViewCitizens);
         buttonPanel.add(btnRefresh);
+        buttonPanel.add(btnBack);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Sự kiện
         btnAdd.addActionListener(e -> addHousehold());
         btnDelete.addActionListener(e -> deleteSelected());
         btnViewCitizens.addActionListener(e -> viewCitizens());
         btnRefresh.addActionListener(e -> loadData());
+        btnBack.addActionListener(e -> goBack());
 
         loadData();
     }
+
+    private void goBack() {
+        parentFrame.setTitle("Hệ thống quản lý Chung cư");
+        parentFrame.setContentPane(new DashboardPanel(parentFrame));
+        parentFrame.revalidate();
+        parentFrame.repaint();
+    }
+
 
     private void loadData() {
         tableModel.setRowCount(0);
