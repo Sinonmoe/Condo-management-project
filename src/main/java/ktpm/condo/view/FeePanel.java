@@ -14,8 +14,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import ktpm.condo.controller.FeeController;
 import ktpm.condo.model.entity.Fee;
-import ktpm.condo.model.service.FeeService;
 
 /**
  * Giao diện quản lý phí, chia thành 2 bảng:
@@ -23,7 +23,8 @@ import ktpm.condo.model.service.FeeService;
  * - Phí đã thanh toán: có thể xoá
  */
 public class FeePanel extends JPanel {
-    private final FeeService service = new FeeService();
+    private final FeeController controller = new FeeController();
+
     private final JTable tableUnpaid = new JTable();
     private final JTable tablePaid = new JTable();
     private final DefaultTableModel modelUnpaid = new DefaultTableModel(new Object[]{"ID", "Hộ", "Loại", "Số tiền", "Hạn nộp"}, 0);
@@ -98,15 +99,15 @@ public class FeePanel extends JPanel {
         if (!tfFilterType.getText().trim().isEmpty())
             type = tfFilterType.getText().trim();
 
-        List<Fee> unpaid = service.filter(id, type, "Chưa thanh toán");
-        List<Fee> paid = service.filter(id, type, "Đã thanh toán");
+        List<Fee> unpaid = controller.filter(id, type, "Chưa thanh toán");
+        List<Fee> paid = controller.filter(id, type, "Đã thanh toán");
         fillTable(modelUnpaid, unpaid);
         fillTable(modelPaid, paid);
     }
 
     private void loadData() {
-        fillTable(modelUnpaid, service.getByStatus("Chưa thanh toán"));
-        fillTable(modelPaid, service.getByStatus("Đã thanh toán"));
+        fillTable(modelUnpaid, controller.getByStatus("Chưa thanh toán"));
+        fillTable(modelPaid, controller.getByStatus("Đã thanh toán"));
     }
 
     private void fillTable(DefaultTableModel model, List<Fee> list) {
@@ -122,7 +123,7 @@ public class FeePanel extends JPanel {
             int id = (int) modelUnpaid.getValueAt(selected, 0);
             int confirm = JOptionPane.showConfirmDialog(this, "Xác nhận đánh dấu đã thanh toán?", "Xác nhận", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                if (service.updateStatus(id, "Đã thanh toán")) {
+                if (controller.updateStatus(id, "Đã thanh toán")) {
                     JOptionPane.showMessageDialog(this, "Đã cập nhật.");
                     loadData();
                 } else {
@@ -138,7 +139,7 @@ public class FeePanel extends JPanel {
             int id = (int) modelPaid.getValueAt(selected, 0);
             int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xoá phí này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                if (service.delete(id)) {
+                if (controller.deleteFee(id)) {
                     JOptionPane.showMessageDialog(this, "Đã xoá.");
                     loadData();
                 } else {

@@ -16,14 +16,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
+import ktpm.condo.controller.HouseholdController;
 import ktpm.condo.model.entity.Household;
-import ktpm.condo.model.service.HouseholdService;
 
 /**
  * Giao diện Swing để quản lý danh sách hộ khẩu trong hệ thống.
  */
 public class HouseholdPanel extends JPanel {
-    private final HouseholdService service = new HouseholdService();
+    private final HouseholdController controller = new HouseholdController();
     private JTable table;
     private DefaultTableModel tableModel;
     private final JFrame parentFrame;
@@ -65,6 +65,9 @@ public class HouseholdPanel extends JPanel {
         loadData();
     }
 
+    /**
+     * Quay lại giao diện chính.
+     */
     private void goBack() {
         parentFrame.setTitle("Hệ thống quản lý Chung cư");
         parentFrame.setContentPane(new DashboardPanel(parentFrame));
@@ -72,10 +75,12 @@ public class HouseholdPanel extends JPanel {
         parentFrame.repaint();
     }
 
-
+    /**
+     * Tải dữ liệu hộ khẩu từ controller và hiển thị.
+     */
     private void loadData() {
         tableModel.setRowCount(0);
-        List<Household> households = service.getAll();
+        List<Household> households = controller.getAllHouseholds();
         for (Household h : households) {
             tableModel.addRow(new Object[]{
                 h.getId(),
@@ -86,6 +91,9 @@ public class HouseholdPanel extends JPanel {
         }
     }
 
+    /**
+     * Hiển thị hộp thoại thêm hộ khẩu mới.
+     */
     private void addHousehold() {
         JTextField tfApartment = new JTextField();
         JTextField tfCode = new JTextField();
@@ -101,30 +109,25 @@ public class HouseholdPanel extends JPanel {
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Thêm hộ khẩu", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
-            try {
-                Household h = new Household();
-                h.setApartmentNumber(tfApartment.getText());
-                h.setHouseholdCode(tfCode.getText());
-                h.setNumberOfMembers(Integer.parseInt(tfMembers.getText()));
-                if (service.add(h)) {
-                    JOptionPane.showMessageDialog(this, "Đã thêm thành công.");
-                    loadData();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Thêm thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Số thành viên phải là số.", "Lỗi nhập", JOptionPane.WARNING_MESSAGE);
+            if (controller.addHousehold(tfApartment.getText(), tfCode.getText(), tfMembers.getText())) {
+                JOptionPane.showMessageDialog(this, "Đã thêm thành công.");
+                loadData();
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm thất bại hoặc dữ liệu không hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
+    /**
+     * Xoá hộ khẩu được chọn nếu xác nhận từ người dùng.
+     */
     private void deleteSelected() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow != -1) {
             int id = (int) tableModel.getValueAt(selectedRow, 0);
             int confirm = JOptionPane.showConfirmDialog(this, "Xoá hộ khẩu này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                if (service.delete(id)) {
+                if (controller.deleteHousehold(id)) {
                     JOptionPane.showMessageDialog(this, "Đã xoá.");
                     loadData();
                 } else {
@@ -136,6 +139,9 @@ public class HouseholdPanel extends JPanel {
         }
     }
 
+    /**
+     * Hiển thị danh sách nhân khẩu thuộc hộ khẩu được chọn.
+     */
     private void viewCitizens() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow != -1) {

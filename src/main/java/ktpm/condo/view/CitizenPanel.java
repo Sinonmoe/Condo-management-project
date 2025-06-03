@@ -26,6 +26,11 @@ public class CitizenPanel extends JPanel {
     private JTable table;
     private DefaultTableModel tableModel;
 
+    /**
+     * Khởi tạo CitizenPanel với ID hộ khẩu tương ứng.
+     *
+     * @param householdId ID của hộ khẩu cần quản lý nhân khẩu
+     */
     public CitizenPanel(int householdId) {
         this.householdId = householdId;
         setLayout(new BorderLayout());
@@ -47,6 +52,9 @@ public class CitizenPanel extends JPanel {
         loadData();
     }
 
+    /**
+     * Tải lại danh sách nhân khẩu từ cơ sở dữ liệu và hiển thị lên bảng.
+     */
     private void loadData() {
         tableModel.setRowCount(0);
         List<Citizen> list = service.getByHousehold(householdId);
@@ -62,6 +70,9 @@ public class CitizenPanel extends JPanel {
         }
     }
 
+    /**
+     * Hiển thị hộp thoại thêm nhân khẩu mới và cập nhật dữ liệu nếu thành công.
+     */
     private void addCitizen() {
         JTextField tfName = new JTextField();
         JTextField tfDOB = new JTextField("yyyy-MM-dd");
@@ -104,6 +115,9 @@ public class CitizenPanel extends JPanel {
         }
     }
 
+    /**
+     * Xoá nhân khẩu được chọn trong bảng nếu xác nhận.
+     */
     private void deleteCitizen() {
         int selected = table.getSelectedRow();
         if (selected != -1) {
@@ -117,6 +131,8 @@ public class CitizenPanel extends JPanel {
                     JOptionPane.showMessageDialog(this, "Không thể xoá.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
             }
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhân khẩu để xoá.");
         }
     }
 }
