@@ -59,7 +59,7 @@ public class FeePanel extends JPanel {
 
         // Nút chức năng
         JPanel btnPanel = new JPanel();
-        JButton btnMarkPaid = new JButton("Đánh dấu ĐÃ thanh toán");
+        JButton btnMarkPaid = new JButton("Đánh dấu đã thanh toán");
         JButton btnDelete = new JButton("Xoá phí đã thanh toán");
         JButton btnBack = new JButton("Quay lại");
 

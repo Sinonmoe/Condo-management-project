@@ -51,7 +51,7 @@ public class DashboardPanel extends JPanel {
         // Sự kiện chuyển panel tương ứng
         btnHousehold.addActionListener(e -> switchPanel(parentFrame, new HouseholdPanel(parentFrame), "Quản lý Hộ khẩu & Nhân khẩu"));
         btnFee.addActionListener(e -> switchPanel(parentFrame, new FeePanel(parentFrame), "Quản lý Phí & Thông báo"));
-        btnFacility.addActionListener(e -> JOptionPane.showMessageDialog(this, "Chức năng đang phát triển.", "Thông báo", JOptionPane.INFORMATION_MESSAGE));
+        btnFacility.addActionListener(e -> switchPanel(parentFrame, new FacilityPanel(parentFrame), "Quản lý Tiện ích"));
         btnReport.addActionListener(e -> JOptionPane.showMessageDialog(this, "Chức năng đang phát triển.", "Thông báo", JOptionPane.INFORMATION_MESSAGE));
     }
 
