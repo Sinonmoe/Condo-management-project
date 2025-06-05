@@ -1,26 +1,14 @@
 package ktpm.condo.view;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
+import javax.swing.border.*;
 import javax.swing.table.DefaultTableModel;
 
 import ktpm.condo.controller.FeeController;
 import ktpm.condo.model.entity.Fee;
 
-/**
- * Giao diện quản lý phí, chia thành 2 bảng:
- * - Phí chưa thanh toán: chỉ có thể chuyển trạng thái
- * - Phí đã thanh toán: có thể xoá
- */
 public class FeePanel extends BasePanel {
     private final FeeController controller = new FeeController();
 
@@ -36,10 +24,12 @@ public class FeePanel extends BasePanel {
 
     public FeePanel(JFrame parentFrame) {
         this.parentFrame = parentFrame;
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // padding ngoài
 
-        // Khu vực lọc
+        // Bộ lọc
         JPanel filterPanel = new JPanel();
+        filterPanel.setBorder(BorderFactory.createTitledBorder("🔎 Bộ lọc tìm kiếm"));
         filterPanel.add(createLabel("ID hộ khẩu:"));
         filterPanel.add(tfFilterId);
         filterPanel.add(createLabel("Loại phí:"));
@@ -48,25 +38,33 @@ public class FeePanel extends BasePanel {
         filterPanel.add(btnFilter);
         add(filterPanel, BorderLayout.NORTH);
 
-        // Hai bảng
-        JPanel center = new JPanel(new GridLayout(2, 1));
+        // Hai bảng với tiêu đề rõ ràng
+        JPanel center = new JPanel();
+        center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
 
+        // Bảng khoản chưa đóng
         modelUnpaid = new DefaultTableModel(new Object[]{"ID", "Hộ", "Loại", "Số tiền", "Hạn nộp"}, 0);
-        modelPaid = new DefaultTableModel(new Object[]{"ID", "Hộ", "Loại", "Số tiền", "Hạn nộp"}, 0);
-
         tableUnpaid = createTable(modelUnpaid);
-        tablePaid = createTable(modelPaid);
+        styleTable(tableUnpaid);
+        JPanel panelUnpaid = createTablePanel("📌 Những khoản chưa đóng", tableUnpaid);
 
-        center.add(new JScrollPane(tableUnpaid));
-        center.add(new JScrollPane(tablePaid));
+        // Bảng khoản đã đóng
+        modelPaid = new DefaultTableModel(new Object[]{"ID", "Hộ", "Loại", "Số tiền", "Hạn nộp"}, 0);
+        tablePaid = createTable(modelPaid);
+        styleTable(tablePaid);
+        JPanel panelPaid = createTablePanel("✅ Những khoản đã đóng", tablePaid);
+
+        center.add(panelUnpaid);
+        center.add(Box.createVerticalStrut(15)); // khoảng cách
+        center.add(panelPaid);
 
         add(center, BorderLayout.CENTER);
 
-        // Nút chức năng
-        JPanel btnPanel = new JPanel();
-        JButton btnMarkPaid = createButton("Đánh dấu đã thanh toán");
-        JButton btnDelete = createButton("Xoá phí đã thanh toán");
-        JButton btnBack = createButton("Quay lại");
+        // Các nút thao tác
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        JButton btnMarkPaid = createButton("✔ Đánh dấu đã thanh toán");
+        JButton btnDelete = createButton("🗑 Xoá phí đã thanh toán");
+        JButton btnBack = createButton("← Quay lại");
 
         btnPanel.add(btnMarkPaid);
         btnPanel.add(btnDelete);
@@ -81,6 +79,26 @@ public class FeePanel extends BasePanel {
         btnBack.addActionListener(e -> goBack());
 
         loadData();
+    }
+
+    private JPanel createTablePanel(String title, JTable table) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.GRAY, 1),
+                title,
+                TitledBorder.LEFT,
+                TitledBorder.TOP,
+                new Font("Arial", Font.BOLD, 14),
+                new Color(0x333333)
+        ));
+        panel.add(new JScrollPane(table), BorderLayout.CENTER);
+        return panel;
+    }
+
+    private void styleTable(JTable table) {
+        table.setRowHeight(28);
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
+        table.setFont(new Font("Arial", Font.PLAIN, 12));
     }
 
     private void applyFilter() {

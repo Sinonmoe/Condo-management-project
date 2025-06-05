@@ -1,73 +1,51 @@
 package ktpm.condo.view;
 
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import java.awt.*;
+import javax.swing.*;
 
 import ktpm.condo.view.facility_panel.FacilityPanel;
 import ktpm.condo.view.household_view.HouseholdPanel;
 
 /**
  * Giao diện Dashboard chính của hệ thống quản lý chung cư.
- * Cung cấp các nút điều hướng đến các chức năng chính:
- * <ul>
- *     <li>Quản lý Hộ khẩu & Nhân khẩu</li>
- *     <li>Quản lý Phí & Thông báo</li>
- *     <li>Quản lý Tiện ích</li>
- *     <li>Thống kê & Báo cáo</li>
- * </ul>
  */
 public class DashboardPanel extends BasePanel {
 
-    /**
-     * Khởi tạo Dashboard hiển thị 4 nút chức năng.
-     *
-     * @param parentFrame JFrame chính để thay đổi nội dung khi chọn module
-     */
     public DashboardPanel(JFrame parentFrame) {
         setLayout(new GridBagLayout());
+        setBorder(BorderFactory.createEmptyBorder(40, 20, 40, 20)); // padding quanh panel
+
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(20, 20, 20, 20);
+        gbc.insets = new Insets(15, 10, 15, 10);
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JButton btnHousehold = createButton("Quản lý Hộ khẩu & Nhân khẩu");
-        JButton btnFee = createButton("Quản lý Phí & Thông báo");
-        JButton btnFacility = createButton("Quản lý Tiện ích");
-        JButton btnReport = createButton("Thống kê & Báo cáo");
-
-        Dimension btnSize = new Dimension(250, 50);
-        btnHousehold.setPreferredSize(btnSize);
-        btnFee.setPreferredSize(btnSize);
-        btnFacility.setPreferredSize(btnSize);
-        btnReport.setPreferredSize(btnSize);
-
+        // 🔷 Tiêu đề nổi bật
+        JLabel title = createTitleLabel("HỆ THỐNG QUẢN LÝ CHUNG CƯ");
         gbc.gridy = 0;
-        add(btnHousehold, gbc);
-        gbc.gridy = 1;
-        add(btnFee, gbc);
-        gbc.gridy = 2;
-        add(btnFacility, gbc);
-        gbc.gridy = 3;
-        add(btnReport, gbc);
+        add(title, gbc);
 
-        // Sự kiện chuyển panel tương ứng
+        // 🔷 Các nút chức năng chính
+        JButton btnHousehold = createButton(" Quản lý Hộ khẩu & Nhân khẩu");
+        JButton btnFee = createButton(" Quản lý Phí & Thông báo");
+        JButton btnFacility = createButton(" Quản lý Tiện ích");
+        JButton btnReport = createButton(" Thống kê & Báo cáo");
+
+        Dimension btnSize = new Dimension(280, 50);
+        JButton[] buttons = {btnHousehold, btnFee, btnFacility, btnReport};
+        for (int i = 0; i < buttons.length; i++) {
+            buttons[i].setPreferredSize(btnSize);
+            gbc.gridy = i + 1;
+            add(buttons[i], gbc);
+        }
+
+        // 🧭 Sự kiện chuyển panel tương ứng
         btnHousehold.addActionListener(e -> switchPanel(parentFrame, new HouseholdPanel(parentFrame), "Quản lý Hộ khẩu & Nhân khẩu"));
         btnFee.addActionListener(e -> switchPanel(parentFrame, new FeePanel(parentFrame), "Quản lý Phí & Thông báo"));
         btnFacility.addActionListener(e -> switchPanel(parentFrame, new FacilityPanel(parentFrame), "Quản lý Tiện ích"));
         btnReport.addActionListener(e -> switchPanel(parentFrame, new ReportPanel(parentFrame), "Thống kê & Báo cáo"));
     }
 
-    /**
-     * Thay đổi nội dung hiển thị trong JFrame cha.
-     *
-     * @param frame    JFrame cần thay đổi nội dung
-     * @param newPanel Panel mới để hiển thị
-     * @param title    Tiêu đề cửa sổ mới
-     */
     private void switchPanel(JFrame frame, JPanel newPanel, String title) {
         frame.setTitle(title);
         frame.setContentPane(newPanel);

@@ -2,6 +2,7 @@ package ktpm.condo.view;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.text.DecimalFormat;
 import java.util.Map;
 
 import javax.swing.JButton;
@@ -9,6 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import ktpm.condo.controller.household_controller.ReportController;
@@ -23,6 +26,8 @@ public class ReportPanel extends BasePanel {
     private JTable table;
     private DefaultTableModel model;
 
+    private final DecimalFormat moneyFormat = new DecimalFormat("#,##0.00");
+
     public ReportPanel(JFrame parentFrame) {
         this.parentFrame = parentFrame;
         initUI();
@@ -32,11 +37,19 @@ public class ReportPanel extends BasePanel {
     private void initUI() {
         setLayout(new BorderLayout());
 
+        // Panel chứa nút báo cáo
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         JButton btnPopulation = createButton("Báo cáo dân cư");
+        btnPopulation.setToolTipText("Xem thống kê số cư dân theo tòa và tầng");
+
         JButton btnFeeByMonth = createButton("Báo cáo thu phí theo tháng");
+        btnFeeByMonth.setToolTipText("Xem tổng thu phí từng tháng");
+
         JButton btnFeeByType = createButton("Báo cáo thu phí theo dịch vụ");
+        btnFeeByType.setToolTipText("Xem tổng thu phí theo từng loại dịch vụ");
+
         JButton btnFacility = createButton("Báo cáo tiện ích");
+        btnFacility.setToolTipText("Xem số lượt sử dụng tiện ích");
 
         btnPanel.add(btnPopulation);
         btnPanel.add(btnFeeByMonth);
@@ -44,11 +57,18 @@ public class ReportPanel extends BasePanel {
         btnPanel.add(btnFacility);
         add(btnPanel, BorderLayout.NORTH);
 
+        // Tạo bảng với model rỗng
         model = new DefaultTableModel();
         table = createTable(model);
+
+        // Định dạng header font và căn giữa
+        table.getTableHeader().setFont(this.getFont());
+        ((DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+
         add(new JScrollPane(table), BorderLayout.CENTER);
 
-        JButton btnBack = createButton("Quay lại Dashboard");
+        // Nút quay lại dashboard
+        JButton btnBack = createButton("Quay lại ");
         btnBack.addActionListener(e -> {
             parentFrame.setTitle("Hệ thống quản lý Chung cư");
             parentFrame.setContentPane(new DashboardPanel(parentFrame));
@@ -59,37 +79,58 @@ public class ReportPanel extends BasePanel {
         bottomPanel.add(btnBack);
         add(bottomPanel, BorderLayout.SOUTH);
 
+        // Sự kiện chuyển đổi báo cáo
         btnPopulation.addActionListener(e -> showPopulationReport());
         btnFeeByMonth.addActionListener(e -> showFeeByMonthReport());
         btnFeeByType.addActionListener(e -> showFeeByTypeReport());
         btnFacility.addActionListener(e -> showFacilityReport());
     }
 
+    // Phương thức chung để cập nhật dữ liệu vào bảng
+    private <K, V> void updateTable(Map<K, V> data, String[] columnNames, boolean rightAlignSecondColumn, boolean formatSecondColumnAsMoney) {
+        model.setColumnIdentifiers(columnNames);
+        model.setRowCount(0);
+
+        data.forEach((k, v) -> {
+            Object secondValue = v;
+            if (formatSecondColumnAsMoney && v instanceof Number) {
+                secondValue = moneyFormat.format(((Number) v).doubleValue());
+            }
+            model.addRow(new Object[]{k, secondValue});
+        });
+
+        // Căn chỉnh cột
+        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        table.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
+        if (rightAlignSecondColumn) {
+            table.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+        } else {
+            table.getColumnModel().getColumn(1).setCellRenderer(leftRenderer);
+        }
+    }
+
     private void showPopulationReport() {
         Map<String, Integer> data = controller.getPopulationByBuildingFloor();
-        model.setColumnIdentifiers(new Object[]{"Tòa - Tầng", "Số cư dân"});
-        model.setRowCount(0);
-        data.forEach((k, v) -> model.addRow(new Object[]{k, v}));
+        updateTable(data, new String[]{"Tòa - Tầng", "Số cư dân"}, true, false);
     }
 
     private void showFeeByMonthReport() {
         Map<String, Double> data = controller.getTotalFeeByMonth();
-        model.setColumnIdentifiers(new Object[]{"Tháng", "Tổng thu phí"});
-        model.setRowCount(0);
-        data.forEach((k, v) -> model.addRow(new Object[]{k, v}));
+        updateTable(data, new String[]{"Tháng", "Tổng thu phí"}, true, true);
     }
 
     private void showFeeByTypeReport() {
         Map<String, Double> data = controller.getTotalFeeByServiceType();
-        model.setColumnIdentifiers(new Object[]{"Loại dịch vụ", "Tổng thu"});
-        model.setRowCount(0);
-        data.forEach((k, v) -> model.addRow(new Object[]{k, v}));
+        updateTable(data, new String[]{"Loại dịch vụ", "Tổng thu"}, true, true);
     }
 
     private void showFacilityReport() {
         Map<String, Integer> data = controller.getFacilityUsageByType();
-        model.setColumnIdentifiers(new Object[]{"Tên tiện ích", "Số lượt sử dụng"});
-        model.setRowCount(0);
-        data.forEach((k, v) -> model.addRow(new Object[]{k, v}));
+        updateTable(data, new String[]{"Tên tiện ích", "Số lượt sử dụng"}, true, false);
     }
 }

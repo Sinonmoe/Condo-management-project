@@ -16,6 +16,7 @@
     </properties>
 
     <dependencies>
+
         <!-- MySQL JDBC Driver -->
         <dependency>
             <groupId>mysql</groupId>
