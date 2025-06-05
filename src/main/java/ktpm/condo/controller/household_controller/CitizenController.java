@@ -1,4 +1,4 @@
-package ktpm.condo.controller;
+package ktpm.condo.controller.household_controller;
 
 import java.time.LocalDate;
 import java.util.List;

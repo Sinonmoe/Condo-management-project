@@ -1,4 +1,4 @@
-package ktpm.condo.controller.household_controller;
+package ktpm.condo.controller;
 
 import java.util.Map;
 

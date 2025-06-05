@@ -2,18 +2,19 @@ package ktpm.condo.view.facility_panel;
 
 import java.awt.GridLayout;
 import java.time.LocalDate;
+import java.util.List;
 
-import javax.swing.JLabel;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import ktpm.condo.controller.FacilityController;
+import ktpm.condo.model.entity.Facility;
 import ktpm.condo.model.entity.FacilityBooking;
 import ktpm.condo.view.BasePanel;
 
 public class AddBookingPanel extends BasePanel {
-    private final JTextField tfName = createTextField(20);
+    private final JComboBox<Facility> cbFacility;
     private final JTextField tfHouseholdId = createTextField(10);
     private final JTextField tfDate = createTextField(15);
 
@@ -23,8 +24,11 @@ public class AddBookingPanel extends BasePanel {
         this.controller = controller;
         setLayout(new GridLayout(0, 1));
 
+        List<Facility> facilities = controller.getAllFacilities();
+        cbFacility = new JComboBox<>(facilities.toArray(new Facility[0]));
+
         add(createLabel("Tên tiện ích:"));
-        add(tfName);
+        add(cbFacility);
         add(createLabel("ID hộ khẩu:"));
         add(tfHouseholdId);
         add(createLabel("Ngày sử dụng (yyyy-MM-dd):"));
@@ -38,8 +42,14 @@ public class AddBookingPanel extends BasePanel {
      */
     public boolean saveBooking() {
         try {
+            Facility selectedFacility = (Facility) cbFacility.getSelectedItem();
+            if (selectedFacility == null) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một tiện ích.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+                return false;
+            }
+
             FacilityBooking fb = new FacilityBooking();
-            fb.setFacilityName(tfName.getText());
+            fb.setFacilityId(selectedFacility.getId());  // Dùng facilityId
             fb.setHouseholdId(Integer.parseInt(tfHouseholdId.getText()));
             fb.setUsageDate(LocalDate.parse(tfDate.getText()));
 

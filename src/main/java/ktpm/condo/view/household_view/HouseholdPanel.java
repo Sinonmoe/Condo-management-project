@@ -48,20 +48,17 @@ public class HouseholdPanel extends BasePanel {
         JButton btnAdd = createButton("Thêm hộ");
         JButton btnDelete = createButton("Xoá hộ");
         JButton btnViewCitizens = createButton("Xem nhân khẩu");
-        JButton btnRefresh = createButton("Làm mới");
         JButton btnBack = createButton("Quay lại");
 
         buttonPanel.add(btnAdd);
         buttonPanel.add(btnDelete);
         buttonPanel.add(btnViewCitizens);
-        buttonPanel.add(btnRefresh);
         buttonPanel.add(btnBack);
         add(buttonPanel, BorderLayout.SOUTH);
 
         btnAdd.addActionListener(e -> addHousehold());
         btnDelete.addActionListener(e -> deleteSelected());
         btnViewCitizens.addActionListener(e -> viewCitizens());
-        btnRefresh.addActionListener(e -> loadData());
         btnBack.addActionListener(e -> goBack());
 
         loadData();
@@ -99,21 +96,19 @@ public class HouseholdPanel extends BasePanel {
     private void addHousehold() {
         JTextField tfApartment = createTextField(15);
         JTextField tfCode = createTextField(15);
-        JTextField tfMembers = createTextField(10);
+        // Bỏ trường số thành viên, vì mặc định là 0, tự động cập nhật theo trigger
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.add(createLabel("Căn hộ:"));
         panel.add(tfApartment);
         panel.add(createLabel("Mã hộ khẩu:"));
         panel.add(tfCode);
-        panel.add(createLabel("Số thành viên:"));
-        panel.add(tfMembers);
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Thêm hộ khẩu", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
-            if (controller.addHousehold(tfApartment.getText(), tfCode.getText(), tfMembers.getText())) {
+            if (controller.addHousehold(tfApartment.getText(), tfCode.getText())) {
                 JOptionPane.showMessageDialog(this, "Đã thêm thành công.");
-                loadData();
+                loadData();  // Tự động cập nhật bảng
             } else {
                 JOptionPane.showMessageDialog(this, "Thêm thất bại hoặc dữ liệu không hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
@@ -131,7 +126,7 @@ public class HouseholdPanel extends BasePanel {
             if (confirm == JOptionPane.YES_OPTION) {
                 if (controller.deleteHousehold(id)) {
                     JOptionPane.showMessageDialog(this, "Đã xoá.");
-                    loadData();
+                    loadData();  // Tự động cập nhật bảng
                 } else {
                     JOptionPane.showMessageDialog(this, "Không thể xoá.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }

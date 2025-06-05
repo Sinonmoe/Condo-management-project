@@ -43,18 +43,14 @@ public class HouseholdController {
      * @param numberOfMembers số thành viên
      * @return true nếu thêm thành công
      */
-    public boolean addHousehold(String apartmentNumber, String householdCode, String numberOfMembers) {
-        try {
-            int members = Integer.parseInt(numberOfMembers);
-            Household h = new Household();
-            h.setApartmentNumber(apartmentNumber);
-            h.setHouseholdCode(householdCode);
-            h.setNumberOfMembers(members);
-            return service.add(h);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
+    public boolean addHousehold(String apartmentNumber, String householdCode) {
+    Household h = new Household();
+    h.setApartmentNumber(apartmentNumber);
+    h.setHouseholdCode(householdCode);
+    h.setNumberOfMembers(0);  // Mặc định 0, trigger DB sẽ cập nhật
+    return service.add(h);
+}
+
 
     /**
      * Xoá một hộ khẩu theo ID.

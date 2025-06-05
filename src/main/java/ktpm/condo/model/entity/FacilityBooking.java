@@ -3,18 +3,14 @@ package ktpm.condo.model.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Đại diện cho một lượt đặt tiện ích của hộ dân.
- */
 public class FacilityBooking {
     private int id;
-    private String facilityName;
+    private int facilityId;       // Thay facilityName bằng facilityId để lưu DB
+    private String facilityName;  // Có thể dùng để hiển thị, không dùng để insert
     private int householdId;
     private LocalDateTime bookingTime;
 
-    public FacilityBooking() {
-        // Constructor không đối số
-    }
+    public FacilityBooking() {}
 
     public FacilityBooking(int id, String facilityName, int householdId, LocalDateTime bookingTime) {
         this.id = id;
@@ -23,47 +19,27 @@ public class FacilityBooking {
         this.bookingTime = bookingTime;
     }
 
-    public FacilityBooking(String facilityName, int householdId, LocalDateTime bookingTime) {
-        this.facilityName = facilityName;
+    // Dùng constructor này để insert, facilityName không dùng để insert
+    public FacilityBooking(int facilityId, int householdId, LocalDateTime bookingTime) {
+        this.facilityId = facilityId;
         this.householdId = householdId;
         this.bookingTime = bookingTime;
     }
 
-    public int getId() {
-        return id;
-    }
+    // Getter & Setter
+    public int getId() { return id; }
+    public int getFacilityId() { return facilityId; }
+    public void setFacilityId(int facilityId) { this.facilityId = facilityId; }
 
-    public String getFacilityName() {
-        return facilityName;
-    }
+    public String getFacilityName() { return facilityName; }
+    public void setFacilityName(String facilityName) { this.facilityName = facilityName; }
 
-    public int getHouseholdId() {
-        return householdId;
-    }
+    public int getHouseholdId() { return householdId; }
+    public void setHouseholdId(int householdId) { this.householdId = householdId; }
 
-    public LocalDateTime getBookingTime() {
-        return bookingTime;
-    }
+    public LocalDateTime getBookingTime() { return bookingTime; }
+    public void setBookingTime(LocalDateTime bookingTime) { this.bookingTime = bookingTime; }
 
-    // Thêm getter trả về LocalDate cho UI tiện dùng
-    public LocalDate getUsageDate() {
-        return bookingTime.toLocalDate();
-    }
-
-    // Các setter bổ sung
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setFacilityName(String facilityName) {
-        this.facilityName = facilityName;
-    }
-
-    public void setHouseholdId(int householdId) {
-        this.householdId = householdId;
-    }
-
-    public void setUsageDate(LocalDate date) {
-        this.bookingTime = date.atStartOfDay();
-    }
+    public LocalDate getUsageDate() { return bookingTime.toLocalDate(); }
+    public void setUsageDate(LocalDate date) { this.bookingTime = date.atStartOfDay(); }
 }

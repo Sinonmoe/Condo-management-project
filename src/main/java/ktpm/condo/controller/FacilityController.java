@@ -4,28 +4,27 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ktpm.condo.model.entity.Facility;
 import ktpm.condo.model.entity.FacilityBooking;
 import ktpm.condo.model.service.facility_service.FacilityBookingService;
-import ktpm.condo.model.service.facility_service.IFacilityBookingService;
+import ktpm.condo.model.service.facility_service.FacilityService;
+import ktpm.condo.model.service.facility_service.IFacilityBookingService;  // Service tiện ích
 
-/**
- * Controller điều phối nghiệp vụ lịch sử đặt tiện ích.
- */
 public class FacilityController {
-    private final IFacilityBookingService service;
+    private final IFacilityBookingService bookingService;
+    private final FacilityService facilityService;
 
     public FacilityController() {
-        this.service = new FacilityBookingService();
+        this.bookingService = new FacilityBookingService();
+        this.facilityService = new FacilityService();
     }
 
-    // Lấy toàn bộ lịch sử
     public List<FacilityBooking> getAllBookings() {
-        return service.getAll();
+        return bookingService.getAll();
     }
 
-    // Lọc lịch sử theo từ khóa (đã refactor logic filter từ panel xuống đây)
     public List<FacilityBooking> filterBookings(String facilityName, String householdIdStr, String usageDateStr) {
-        List<FacilityBooking> list = service.getAll();
+        List<FacilityBooking> list = bookingService.getAll();
 
         if (facilityName != null && !facilityName.trim().isEmpty()) {
             String fNameLower = facilityName.trim().toLowerCase();
@@ -60,10 +59,15 @@ public class FacilityController {
     }
 
     public boolean addBooking(FacilityBooking booking) {
-        return service.add(booking);
+        return bookingService.add(booking);
     }
 
     public boolean deleteBooking(int id) {
-        return service.delete(id);
+        return bookingService.delete(id);
+    }
+
+    // Thêm hàm lấy danh sách facility để UI chọn
+    public List<Facility> getAllFacilities() {
+        return facilityService.getAll();
     }
 }

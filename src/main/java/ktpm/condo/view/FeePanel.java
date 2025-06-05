@@ -1,9 +1,25 @@
 package ktpm.condo.view;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.time.LocalDate;
 import java.util.List;
-import javax.swing.*;
-import javax.swing.border.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import ktpm.condo.controller.FeeController;
@@ -62,10 +78,12 @@ public class FeePanel extends BasePanel {
 
         // Các nút thao tác
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        JButton btnAddUnpaid = createButton("➕ Thêm phí chưa thanh toán");
         JButton btnMarkPaid = createButton("✔ Đánh dấu đã thanh toán");
         JButton btnDelete = createButton("🗑 Xoá phí đã thanh toán");
-        JButton btnBack = createButton("← Quay lại");
+        JButton btnBack = createButton("← Quay lại");  // nút quay lại
 
+        btnPanel.add(btnAddUnpaid);
         btnPanel.add(btnMarkPaid);
         btnPanel.add(btnDelete);
         btnPanel.add(btnBack);
@@ -74,6 +92,7 @@ public class FeePanel extends BasePanel {
 
         // Sự kiện
         btnFilter.addActionListener(e -> applyFilter());
+        btnAddUnpaid.addActionListener(e -> addUnpaidFee());
         btnMarkPaid.addActionListener(e -> markAsPaid());
         btnDelete.addActionListener(e -> deletePaid());
         btnBack.addActionListener(e -> goBack());
@@ -131,6 +150,49 @@ public class FeePanel extends BasePanel {
         model.setRowCount(0);
         for (Fee f : list) {
             model.addRow(new Object[]{f.getId(), f.getHouseholdId(), f.getType(), f.getAmount(), f.getDueDate()});
+        }
+    }
+
+    private void addUnpaidFee() {
+        JTextField tfHouseholdId = new JTextField();
+        JTextField tfType = new JTextField();
+        JTextField tfAmount = new JTextField();
+        JTextField tfDueDate = new JTextField("yyyy-MM-dd");
+
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.add(new JLabel("ID hộ khẩu:"));
+        panel.add(tfHouseholdId);
+        panel.add(new JLabel("Loại phí:"));
+        panel.add(tfType);
+        panel.add(new JLabel("Số tiền:"));
+        panel.add(tfAmount);
+        panel.add(new JLabel("Hạn nộp (yyyy-MM-dd):"));
+        panel.add(tfDueDate);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Thêm phí chưa thanh toán", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                int householdId = Integer.parseInt(tfHouseholdId.getText().trim());
+                String type = tfType.getText().trim();
+                double amount = Double.parseDouble(tfAmount.getText().trim());
+                LocalDate dueDate = LocalDate.parse(tfDueDate.getText().trim());
+
+                Fee newFee = new Fee();
+                newFee.setHouseholdId(householdId);
+                newFee.setType(type);
+                newFee.setAmount(amount);
+                newFee.setDueDate(dueDate);
+                newFee.setStatus("Chưa thanh toán");
+
+                if (controller.addFee(newFee)) {
+                    JOptionPane.showMessageDialog(this, "Thêm phí thành công.");
+                    loadData();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Thêm phí thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Dữ liệu nhập không hợp lệ.", "Lỗi nhập liệu", JOptionPane.WARNING_MESSAGE);
+            }
         }
     }
 

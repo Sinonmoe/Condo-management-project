@@ -33,6 +33,7 @@ public class FacilityPanel extends BasePanel {
         this.parentFrame = parentFrame;
         setLayout(new BorderLayout());
 
+        // Filter panel
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         filterPanel.add(createLabel("Tên tiện ích:"));
         filterPanel.add(tfFilterFacilityName);
@@ -44,26 +45,26 @@ public class FacilityPanel extends BasePanel {
         filterPanel.add(btnFilter);
         add(filterPanel, BorderLayout.NORTH);
 
+        // Table
         tableModel = new DefaultTableModel(new Object[]{"ID", "Tên tiện ích", "ID hộ khẩu", "Ngày sử dụng"}, 0);
         table = createTable(tableModel);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
+        // Button panel
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnAdd = createButton("Thêm tiện ích");
         JButton btnDelete = createButton("Xoá tiện ích");
-        JButton btnRefresh = createButton("Làm mới");
         JButton btnBack = createButton("Quay lại");
 
         btnPanel.add(btnAdd);
         btnPanel.add(btnDelete);
-        btnPanel.add(btnRefresh);
         btnPanel.add(btnBack);
         add(btnPanel, BorderLayout.SOUTH);
 
+        // Action listeners
         btnFilter.addActionListener(e -> applyFilter());
-        btnAdd.addActionListener(e -> addBooking());
+        btnAdd.addActionListener(e -> openAddBookingPanel());
         btnDelete.addActionListener(e -> deleteBooking());
-        btnRefresh.addActionListener(e -> loadData());
         btnBack.addActionListener(e -> goBack());
 
         loadData();
@@ -99,17 +100,14 @@ public class FacilityPanel extends BasePanel {
         }
     }
 
-    private void addBooking() {
-        // Thay thế AddBookingDialog bằng AddBookingPanel
-        AddBookingPanel panel = new AddBookingPanel(controller);
+    private void openAddBookingPanel() {
+        AddBookingPanel addPanel = new AddBookingPanel(controller);
         int result = JOptionPane.showConfirmDialog(
-            this, panel, "Thêm lượt đặt tiện ích", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            this, addPanel, "Thêm lượt đặt tiện ích", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
+        );
         if (result == JOptionPane.OK_OPTION) {
-            if (panel.saveBooking()) {
-                JOptionPane.showMessageDialog(this, "Đã thêm lượt đặt tiện ích.");
+            if (addPanel.saveBooking()) {
                 loadData();
-            } else {
-                JOptionPane.showMessageDialog(this, "Thêm thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

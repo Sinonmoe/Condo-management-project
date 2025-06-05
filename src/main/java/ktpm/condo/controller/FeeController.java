@@ -35,4 +35,5 @@ public class FeeController {
     public List<Fee> filterFees(Integer householdId, String type, String status) {
         return service.filter(householdId, type, status);
     }
+
 }

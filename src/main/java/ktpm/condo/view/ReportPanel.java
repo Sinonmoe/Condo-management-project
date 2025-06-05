@@ -14,7 +14,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import ktpm.condo.controller.household_controller.ReportController;
+import ktpm.condo.controller.ReportController;
 
 /**
  * Giao diện báo cáo thống kê với nhiều loại báo cáo.

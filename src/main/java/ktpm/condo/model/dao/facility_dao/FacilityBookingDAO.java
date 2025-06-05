@@ -100,23 +100,18 @@ public class FacilityBookingDAO extends DBConnection {
      * @return true nếu thêm thành công, ngược lại false
      */
     public boolean addBooking(FacilityBooking booking) {
-        String sql = """
-            INSERT INTO facility_booking (facility_id, household_id, booking_time)
-            VALUES (
-                (SELECT id FROM facility WHERE name = ? LIMIT 1),
-                ?, ?
-            )
-        """;
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, booking.getFacilityName());
-            stmt.setInt(2, booking.getHouseholdId());
-            stmt.setTimestamp(3, Timestamp.valueOf(booking.getBookingTime()));
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+    String sql = "INSERT INTO facility_booking (facility_id, household_id, booking_time) VALUES (?, ?, ?)";
+    try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, booking.getFacilityId());  // Truyền facilityId trực tiếp
+        stmt.setInt(2, booking.getHouseholdId());
+        stmt.setTimestamp(3, Timestamp.valueOf(booking.getBookingTime()));
+        return stmt.executeUpdate() > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
     }
+}
+
 
     /**
      * Xóa một lượt đặt tiện ích theo ID.
