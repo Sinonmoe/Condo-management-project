@@ -7,8 +7,10 @@ import java.awt.Insets;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import ktpm.condo.view.facility_panel.FacilityPanel;
+import ktpm.condo.view.household_view.HouseholdPanel;
 
 /**
  * Giao diện Dashboard chính của hệ thống quản lý chung cư.
@@ -20,7 +22,7 @@ import javax.swing.JPanel;
  *     <li>Thống kê & Báo cáo</li>
  * </ul>
  */
-public class DashboardPanel extends JPanel {
+public class DashboardPanel extends BasePanel {
 
     /**
      * Khởi tạo Dashboard hiển thị 4 nút chức năng.
@@ -32,10 +34,10 @@ public class DashboardPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(20, 20, 20, 20);
 
-        JButton btnHousehold = new JButton("Quản lý Hộ khẩu & Nhân khẩu");
-        JButton btnFee = new JButton("Quản lý Phí & Thông báo");
-        JButton btnFacility = new JButton("Quản lý Tiện ích");
-        JButton btnReport = new JButton("Thống kê & Báo cáo");
+        JButton btnHousehold = createButton("Quản lý Hộ khẩu & Nhân khẩu");
+        JButton btnFee = createButton("Quản lý Phí & Thông báo");
+        JButton btnFacility = createButton("Quản lý Tiện ích");
+        JButton btnReport = createButton("Thống kê & Báo cáo");
 
         Dimension btnSize = new Dimension(250, 50);
         btnHousehold.setPreferredSize(btnSize);
@@ -43,10 +45,14 @@ public class DashboardPanel extends JPanel {
         btnFacility.setPreferredSize(btnSize);
         btnReport.setPreferredSize(btnSize);
 
-        gbc.gridy = 0; add(btnHousehold, gbc);
-        gbc.gridy = 1; add(btnFee, gbc);
-        gbc.gridy = 2; add(btnFacility, gbc);
-        gbc.gridy = 3; add(btnReport, gbc);
+        gbc.gridy = 0;
+        add(btnHousehold, gbc);
+        gbc.gridy = 1;
+        add(btnFee, gbc);
+        gbc.gridy = 2;
+        add(btnFacility, gbc);
+        gbc.gridy = 3;
+        add(btnReport, gbc);
 
         // Sự kiện chuyển panel tương ứng
         btnHousehold.addActionListener(e -> switchPanel(parentFrame, new HouseholdPanel(parentFrame), "Quản lý Hộ khẩu & Nhân khẩu"));

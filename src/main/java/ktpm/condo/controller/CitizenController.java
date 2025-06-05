@@ -4,13 +4,28 @@ import java.time.LocalDate;
 import java.util.List;
 
 import ktpm.condo.model.entity.Citizen;
-import ktpm.condo.model.service.CitizenService;
+import ktpm.condo.model.service.household_service.CitizenService;
+import ktpm.condo.model.service.household_service.ICitizenService;
 
 /**
  * Controller xử lý logic giữa giao diện CitizenPanel và tầng service.
  */
 public class CitizenController {
-    private final CitizenService service = new CitizenService();
+    private final ICitizenService service;
+
+    /**
+     * Constructor khởi tạo với implementation CitizenService mặc định.
+     */
+    public CitizenController() {
+        this.service = new CitizenService();
+    }
+
+    /**
+     * Cho phép tiêm service khác (ví dụ mock trong test).
+     */
+    public CitizenController(ICitizenService service) {
+        this.service = service;
+    }
 
     /**
      * Lấy danh sách nhân khẩu của hộ khẩu.

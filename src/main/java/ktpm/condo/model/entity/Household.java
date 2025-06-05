@@ -2,7 +2,7 @@ package ktpm.condo.model.entity;
 
 import java.util.List;
 
-import ktpm.condo.model.dao.CitizenDAO;
+import ktpm.condo.model.dao.household_dao.CitizenDAO;
 
 /**
  * Lớp đại diện cho một Hộ khẩu trong hệ thống quản lý chung cư.

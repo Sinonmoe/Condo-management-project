@@ -148,4 +148,31 @@ public class ReportDAO extends DBConnection {
         }
         return result;
     }
+    // ... các phương thức cũ
+
+    /**
+     * Thống kê tổng thu theo từng loại dịch vụ (ví dụ: điện, nước, giữ xe).
+     *
+     * @return map key: loại dịch vụ, value: tổng tiền thu
+     */
+    public Map<String, Double> getTotalFeeByServiceType() {
+        Map<String, Double> result = new HashMap<>();
+        String sql = """
+            SELECT type, SUM(amount) AS total
+            FROM fee
+            WHERE status = 'Đã thanh toán'
+            GROUP BY type
+        """;
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                result.put(rs.getString("type"), rs.getDouble("total"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

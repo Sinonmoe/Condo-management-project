@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -22,36 +21,41 @@ import ktpm.condo.model.entity.Fee;
  * - Phí chưa thanh toán: chỉ có thể chuyển trạng thái
  * - Phí đã thanh toán: có thể xoá
  */
-public class FeePanel extends JPanel {
+public class FeePanel extends BasePanel {
     private final FeeController controller = new FeeController();
 
-    private final JTable tableUnpaid = new JTable();
-    private final JTable tablePaid = new JTable();
-    private final DefaultTableModel modelUnpaid = new DefaultTableModel(new Object[]{"ID", "Hộ", "Loại", "Số tiền", "Hạn nộp"}, 0);
-    private final DefaultTableModel modelPaid = new DefaultTableModel(new Object[]{"ID", "Hộ", "Loại", "Số tiền", "Hạn nộp"}, 0);
+    private final JTable tableUnpaid;
+    private final JTable tablePaid;
+    private final DefaultTableModel modelUnpaid;
+    private final DefaultTableModel modelPaid;
 
-    private final JTextField tfFilterId = new JTextField(5);
-    private final JTextField tfFilterType = new JTextField(10);
+    private final JTextField tfFilterId = createTextField(5);
+    private final JTextField tfFilterType = createTextField(10);
+
+    private final JFrame parentFrame;
 
     public FeePanel(JFrame parentFrame) {
+        this.parentFrame = parentFrame;
         setLayout(new BorderLayout());
 
         // Khu vực lọc
         JPanel filterPanel = new JPanel();
-        filterPanel.add(new JLabel("ID hộ khẩu:"));
+        filterPanel.add(createLabel("ID hộ khẩu:"));
         filterPanel.add(tfFilterId);
-        filterPanel.add(new JLabel("Loại phí:"));
+        filterPanel.add(createLabel("Loại phí:"));
         filterPanel.add(tfFilterType);
-        JButton btnFilter = new JButton("Lọc");
+        JButton btnFilter = createButton("Lọc");
         filterPanel.add(btnFilter);
-
         add(filterPanel, BorderLayout.NORTH);
 
         // Hai bảng
         JPanel center = new JPanel(new GridLayout(2, 1));
 
-        tableUnpaid.setModel(modelUnpaid);
-        tablePaid.setModel(modelPaid);
+        modelUnpaid = new DefaultTableModel(new Object[]{"ID", "Hộ", "Loại", "Số tiền", "Hạn nộp"}, 0);
+        modelPaid = new DefaultTableModel(new Object[]{"ID", "Hộ", "Loại", "Số tiền", "Hạn nộp"}, 0);
+
+        tableUnpaid = createTable(modelUnpaid);
+        tablePaid = createTable(modelPaid);
 
         center.add(new JScrollPane(tableUnpaid));
         center.add(new JScrollPane(tablePaid));
@@ -60,9 +64,9 @@ public class FeePanel extends JPanel {
 
         // Nút chức năng
         JPanel btnPanel = new JPanel();
-        JButton btnMarkPaid = new JButton("Đánh dấu đã thanh toán");
-        JButton btnDelete = new JButton("Xoá phí đã thanh toán");
-        JButton btnBack = new JButton("Quay lại");
+        JButton btnMarkPaid = createButton("Đánh dấu đã thanh toán");
+        JButton btnDelete = createButton("Xoá phí đã thanh toán");
+        JButton btnBack = createButton("Quay lại");
 
         btnPanel.add(btnMarkPaid);
         btnPanel.add(btnDelete);
@@ -74,12 +78,7 @@ public class FeePanel extends JPanel {
         btnFilter.addActionListener(e -> applyFilter());
         btnMarkPaid.addActionListener(e -> markAsPaid());
         btnDelete.addActionListener(e -> deletePaid());
-        btnBack.addActionListener(e -> {
-            parentFrame.setTitle("Hệ thống quản lý Chung cư");
-            parentFrame.setContentPane(new DashboardPanel(parentFrame));
-            parentFrame.revalidate();
-            parentFrame.repaint();
-        });
+        btnBack.addActionListener(e -> goBack());
 
         loadData();
     }
@@ -99,15 +98,15 @@ public class FeePanel extends JPanel {
         if (!tfFilterType.getText().trim().isEmpty())
             type = tfFilterType.getText().trim();
 
-        List<Fee> unpaid = controller.filter(id, type, "Chưa thanh toán");
-        List<Fee> paid = controller.filter(id, type, "Đã thanh toán");
+        List<Fee> unpaid = controller.filterFees(id, type, "Chưa thanh toán");
+        List<Fee> paid = controller.filterFees(id, type, "Đã thanh toán");
         fillTable(modelUnpaid, unpaid);
         fillTable(modelPaid, paid);
     }
 
     private void loadData() {
-        fillTable(modelUnpaid, controller.getByStatus("Chưa thanh toán"));
-        fillTable(modelPaid, controller.getByStatus("Đã thanh toán"));
+        fillTable(modelUnpaid, controller.getFeesByStatus("Chưa thanh toán"));
+        fillTable(modelPaid, controller.getFeesByStatus("Đã thanh toán"));
     }
 
     private void fillTable(DefaultTableModel model, List<Fee> list) {
@@ -123,7 +122,7 @@ public class FeePanel extends JPanel {
             int id = (int) modelUnpaid.getValueAt(selected, 0);
             int confirm = JOptionPane.showConfirmDialog(this, "Xác nhận đánh dấu đã thanh toán?", "Xác nhận", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                if (controller.updateStatus(id, "Đã thanh toán")) {
+                if (controller.updateFeeStatus(id, "Đã thanh toán")) {
                     JOptionPane.showMessageDialog(this, "Đã cập nhật.");
                     loadData();
                 } else {
@@ -146,6 +145,15 @@ public class FeePanel extends JPanel {
                     JOptionPane.showMessageDialog(this, "Xoá thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
             }
+        }
+    }
+
+    private void goBack() {
+        if (parentFrame != null) {
+            parentFrame.setTitle("Hệ thống quản lý Chung cư");
+            parentFrame.setContentPane(new DashboardPanel(parentFrame));
+            parentFrame.revalidate();
+            parentFrame.repaint();
         }
     }
 }
