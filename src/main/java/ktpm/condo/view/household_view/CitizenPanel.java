@@ -2,7 +2,6 @@ package ktpm.condo.view.household_view;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.time.LocalDate;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -13,30 +12,34 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import ktpm.condo.controller.household_controller.CitizenController;
 import ktpm.condo.model.entity.Citizen;
-import ktpm.condo.model.service.household_service.CitizenService;
 import ktpm.condo.view.BasePanel;
 
 /**
  * Giao diện Swing để quản lý nhân khẩu thuộc một hộ khẩu cụ thể.
  */
 public class CitizenPanel extends BasePanel {
-    private final CitizenService service = new CitizenService();
+    private final CitizenController service = new CitizenController();
     private final int householdId;
-    private JTable table;
-    private DefaultTableModel tableModel;
+    private final HouseholdPanel parentHouseholdPanel;
+
+    private final JTable table;
+    private final DefaultTableModel tableModel;
 
     /**
      * Khởi tạo CitizenPanel với ID hộ khẩu tương ứng.
      *
      * @param householdId ID của hộ khẩu cần quản lý nhân khẩu
+     * @param parentHouseholdPanel tham chiếu để gọi loadData() làm mới hộ khẩu
      */
-    public CitizenPanel(int householdId) {
+    public CitizenPanel(int householdId, HouseholdPanel parentHouseholdPanel) {
         this.householdId = householdId;
+        this.parentHouseholdPanel = parentHouseholdPanel;
+
         setLayout(new BorderLayout());
 
-        tableModel = new DefaultTableModel(
-            new Object[]{"ID", "Họ tên", "Ngày sinh", "Giới tính", "Nghề nghiệp", "Quan hệ"}, 0);
+        tableModel = new DefaultTableModel(new Object[]{"ID", "Họ tên", "Ngày sinh", "Giới tính", "Nghề nghiệp", "Quan hệ"}, 0);
         table = createTable(tableModel);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
@@ -75,12 +78,11 @@ public class CitizenPanel extends BasePanel {
      * Hiển thị hộp thoại thêm nhân khẩu mới và cập nhật dữ liệu nếu thành công.
      */
     private void addCitizen() {
-        JTextField tfName = createTextField(20);
-        JTextField tfDOB = createTextField(20);
-        tfDOB.setText("yyyy-MM-dd");
-        JTextField tfGender = createTextField(20);
-        JTextField tfJob = createTextField(20);
-        JTextField tfRelation = createTextField(20);
+        JTextField tfName = createTextField(15);
+        JTextField tfDOB = createTextField(15);
+        JTextField tfGender = createTextField(10);
+        JTextField tfJob = createTextField(15);
+        JTextField tfRelation = createTextField(15);
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.add(createLabel("Họ tên:"));
@@ -97,17 +99,12 @@ public class CitizenPanel extends BasePanel {
         int result = JOptionPane.showConfirmDialog(this, panel, "Thêm nhân khẩu", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             try {
-                Citizen c = new Citizen();
-                c.setHouseholdId(householdId);
-                c.setName(tfName.getText().trim());
-                c.setDateOfBirth(LocalDate.parse(tfDOB.getText().trim()));
-                c.setGender(tfGender.getText().trim());
-                c.setJob(tfJob.getText().trim());
-                c.setRelationshipToHead(tfRelation.getText().trim());
-
-                if (service.add(c)) {
+                if (service.addCitizen(householdId, tfName.getText(), tfDOB.getText(), tfGender.getText(), tfJob.getText(), tfRelation.getText())) {
                     JOptionPane.showMessageDialog(this, "Đã thêm.");
                     loadData();
+                    if (parentHouseholdPanel != null) {
+                        parentHouseholdPanel.loadData(); // làm mới số thành viên trong hộ khẩu
+                    }
                 } else {
                     JOptionPane.showMessageDialog(this, "Thêm thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
@@ -126,9 +123,12 @@ public class CitizenPanel extends BasePanel {
             int id = (int) tableModel.getValueAt(selected, 0);
             int confirm = JOptionPane.showConfirmDialog(this, "Xoá nhân khẩu này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                if (service.delete(id)) {
+                if (service.deleteCitizen(id)) {
                     JOptionPane.showMessageDialog(this, "Đã xoá.");
                     loadData();
+                    if (parentHouseholdPanel != null) {
+                        parentHouseholdPanel.loadData(); // làm mới số thành viên trong hộ khẩu
+                    }
                 } else {
                     JOptionPane.showMessageDialog(this, "Không thể xoá.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }

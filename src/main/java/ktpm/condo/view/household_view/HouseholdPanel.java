@@ -77,7 +77,7 @@ public class HouseholdPanel extends BasePanel {
     /**
      * Tải dữ liệu hộ khẩu từ controller và hiển thị.
      */
-    private void loadData() {
+    public void loadData() {
         tableModel.setRowCount(0);
         List<Household> households = controller.getAllHouseholds();
         for (Household h : households) {
@@ -96,7 +96,6 @@ public class HouseholdPanel extends BasePanel {
     private void addHousehold() {
         JTextField tfApartment = createTextField(15);
         JTextField tfCode = createTextField(15);
-        // Bỏ trường số thành viên, vì mặc định là 0, tự động cập nhật theo trigger
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.add(createLabel("Căn hộ:"));
@@ -108,7 +107,7 @@ public class HouseholdPanel extends BasePanel {
         if (result == JOptionPane.OK_OPTION) {
             if (controller.addHousehold(tfApartment.getText(), tfCode.getText())) {
                 JOptionPane.showMessageDialog(this, "Đã thêm thành công.");
-                loadData();  // Tự động cập nhật bảng
+                loadData();
             } else {
                 JOptionPane.showMessageDialog(this, "Thêm thất bại hoặc dữ liệu không hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
@@ -126,7 +125,7 @@ public class HouseholdPanel extends BasePanel {
             if (confirm == JOptionPane.YES_OPTION) {
                 if (controller.deleteHousehold(id)) {
                     JOptionPane.showMessageDialog(this, "Đã xoá.");
-                    loadData();  // Tự động cập nhật bảng
+                    loadData();
                 } else {
                     JOptionPane.showMessageDialog(this, "Không thể xoá.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
@@ -146,7 +145,7 @@ public class HouseholdPanel extends BasePanel {
             JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Nhân khẩu hộ " + householdId, true);
             dialog.setSize(600, 400);
             dialog.setLocationRelativeTo(null);
-            dialog.setContentPane(new CitizenPanel(householdId));
+            dialog.setContentPane(new CitizenPanel(householdId, this));
             dialog.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn một hộ khẩu để xem nhân khẩu.");

@@ -76,17 +76,26 @@ public class FeePanel extends BasePanel {
 
         add(center, BorderLayout.CENTER);
 
-        // Các nút thao tác
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        JButton btnAddUnpaid = createButton("➕ Thêm phí chưa thanh toán");
-        JButton btnMarkPaid = createButton("✔ Đánh dấu đã thanh toán");
-        JButton btnDelete = createButton("🗑 Xoá phí đã thanh toán");
-        JButton btnBack = createButton("← Quay lại");  // nút quay lại
+        // Các nút thao tác và nút quay lại được chia thành 2 nhóm để căn chỉnh hợp lý
+        JPanel btnPanel = new JPanel(new BorderLayout(10, 10));
 
-        btnPanel.add(btnAddUnpaid);
-        btnPanel.add(btnMarkPaid);
-        btnPanel.add(btnDelete);
-        btnPanel.add(btnBack);
+        // Nhóm nút thao tác bên trái
+        JPanel actionButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
+        JButton btnAddUnpaid = createButton("Thêm phí chưa thanh toán");
+        JButton btnMarkPaid = createButton("Đánh dấu đã thanh toán");
+        JButton btnDelete = createButton("Xoá phí đã thanh toán");
+        actionButtons.add(btnAddUnpaid);
+        actionButtons.add(btnMarkPaid);
+        actionButtons.add(btnDelete);
+
+        // Nhóm nút quay lại bên phải
+        JPanel backButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
+        JButton btnBack = createButton("Quay lại");
+        backButtonPanel.add(btnBack);
+
+        // Thêm hai nhóm vào panel chính
+        btnPanel.add(actionButtons, BorderLayout.WEST);
+        btnPanel.add(backButtonPanel, BorderLayout.EAST);
 
         add(btnPanel, BorderLayout.SOUTH);
 
