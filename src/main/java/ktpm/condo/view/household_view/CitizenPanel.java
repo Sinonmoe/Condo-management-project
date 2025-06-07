@@ -3,7 +3,7 @@ package ktpm.condo.view.household_view;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.List;
-
+import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -11,7 +11,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-
+import javax.swing.SpinnerDateModel;
+import javax.swing.JSpinner;
 import ktpm.condo.controller.household_controller.CitizenController;
 import ktpm.condo.model.entity.Citizen;
 import ktpm.condo.view.BasePanel;
@@ -79,18 +80,26 @@ public class CitizenPanel extends BasePanel {
      */
     private void addCitizen() {
         JTextField tfName = createTextField(15);
-        JTextField tfDOB = createTextField(15);
-        JTextField tfGender = createTextField(10);
+
+        // Spinner chọn ngày sinh
+        SpinnerDateModel dateModel = new SpinnerDateModel();
+        JSpinner dateSpinner = new JSpinner(dateModel);
+        dateSpinner.setEditor(new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd"));
+
+        // ComboBox chọn giới tính
+        String[] genders = {"Nam", "Nữ"};
+        JComboBox<String> cbGender = new JComboBox<>(genders);
+
         JTextField tfJob = createTextField(15);
         JTextField tfRelation = createTextField(15);
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.add(createLabel("Họ tên:"));
         panel.add(tfName);
-        panel.add(createLabel("Ngày sinh (yyyy-MM-dd):"));
-        panel.add(tfDOB);
+        panel.add(createLabel("Ngày sinh:"));
+        panel.add(dateSpinner);
         panel.add(createLabel("Giới tính:"));
-        panel.add(tfGender);
+        panel.add(cbGender);
         panel.add(createLabel("Nghề nghiệp:"));
         panel.add(tfJob);
         panel.add(createLabel("Quan hệ với chủ hộ:"));
@@ -99,11 +108,17 @@ public class CitizenPanel extends BasePanel {
         int result = JOptionPane.showConfirmDialog(this, panel, "Thêm nhân khẩu", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             try {
-                if (service.addCitizen(householdId, tfName.getText(), tfDOB.getText(), tfGender.getText(), tfJob.getText(), tfRelation.getText())) {
+                String name = tfName.getText();
+                String dob = new java.text.SimpleDateFormat("yyyy-MM-dd").format(dateSpinner.getValue());
+                String gender = (String) cbGender.getSelectedItem();
+                String job = tfJob.getText();
+                String relation = tfRelation.getText();
+
+                if (service.addCitizen(householdId, name, dob, gender, job, relation)) {
                     JOptionPane.showMessageDialog(this, "Đã thêm.");
                     loadData();
                     if (parentHouseholdPanel != null) {
-                        parentHouseholdPanel.loadData(); // làm mới số thành viên trong hộ khẩu
+                        parentHouseholdPanel.loadData(); // làm mới số thành viên
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "Thêm thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -113,6 +128,7 @@ public class CitizenPanel extends BasePanel {
             }
         }
     }
+
 
     /**
      * Xoá nhân khẩu được chọn trong bảng nếu xác nhận.
