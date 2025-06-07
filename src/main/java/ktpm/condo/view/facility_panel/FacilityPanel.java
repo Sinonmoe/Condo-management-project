@@ -3,7 +3,11 @@ package ktpm.condo.view.facility_panel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.List;
-
+import javax.swing.JSpinner;
+import javax.swing.SpinnerDateModel;
+import javax.swing.JSpinner.DateEditor;
+import java.text.SimpleDateFormat;
+import javax.swing.JCheckBox;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -24,10 +28,12 @@ public class FacilityPanel extends BasePanel {
 
     private final DefaultTableModel tableModel;
     private final JTable table;
+    private final JCheckBox cbEnableDateFilter = new JCheckBox("Lọc theo ngày");
 
     private final JTextField tfFilterFacilityName = createTextField(10);
     private final JTextField tfFilterHouseholdId = createTextField(5);
-    private final JTextField tfFilterUsageDate = createTextField(10);
+    private final JSpinner spFilterUsageDate = new JSpinner(new SpinnerDateModel());
+
 
     public FacilityPanel(JFrame parentFrame) {
         this.parentFrame = parentFrame;
@@ -40,7 +46,11 @@ public class FacilityPanel extends BasePanel {
         filterPanel.add(createLabel("ID hộ khẩu:"));
         filterPanel.add(tfFilterHouseholdId);
         filterPanel.add(createLabel("Ngày sử dụng (yyyy-MM-dd):"));
-        filterPanel.add(tfFilterUsageDate);
+        filterPanel.add(spFilterUsageDate);
+        filterPanel.add(cbEnableDateFilter);
+
+        spFilterUsageDate.setEditor(new JSpinner.DateEditor(spFilterUsageDate, "yyyy-MM-dd"));
+        filterPanel.add(spFilterUsageDate);
         JButton btnFilter = createButton("Lọc");
         filterPanel.add(btnFilter);
         add(filterPanel, BorderLayout.NORTH);
@@ -77,16 +87,22 @@ public class FacilityPanel extends BasePanel {
 
     private void applyFilter() {
         try {
+            String usageDate = null;
+            if (cbEnableDateFilter.isSelected()) {
+                usageDate = new SimpleDateFormat("yyyy-MM-dd").format(spFilterUsageDate.getValue());
+            }
             List<FacilityBooking> filtered = controller.filterBookings(
-                tfFilterFacilityName.getText(),
-                tfFilterHouseholdId.getText(),
-                tfFilterUsageDate.getText()
+                    tfFilterFacilityName.getText(),
+                    tfFilterHouseholdId.getText(),
+                    usageDate
             );
             fillTable(filtered);
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi lọc dữ liệu", JOptionPane.WARNING_MESSAGE);
         }
     }
+
+
 
     private void fillTable(List<FacilityBooking> list) {
         tableModel.setRowCount(0);
