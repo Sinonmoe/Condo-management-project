@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class FeeDAO extends DBConnection {
         return list;
     }
 
+
     /**
      * Lấy danh sách phí theo trạng thái (Đã hoặc Chưa thanh toán).
      *
@@ -41,11 +43,30 @@ public class FeeDAO extends DBConnection {
     public List<Fee> getByStatus(String status) {
         List<Fee> list = new ArrayList<>();
         String sql = "SELECT * FROM fee WHERE status = ?";
+        if ("Chưa thanh toán".equals(status)) {
+            sql += " AND due_date >= CURRENT_DATE";
+        }
         try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, status);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 list.add(extractFee(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Fee> getOverdueUnpaidFees(LocalDate today) {
+        List<Fee> list = new ArrayList<>();
+        String sql = "SELECT * FROM fee WHERE status = 'Chưa thanh toán' AND due_date < ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, Date.valueOf(today));
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                list.add(extractFee(rs)); // dùng lại hàm đã có
             }
         } catch (SQLException e) {
             e.printStackTrace();

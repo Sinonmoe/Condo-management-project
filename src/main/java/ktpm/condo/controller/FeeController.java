@@ -1,5 +1,6 @@
 package ktpm.condo.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import ktpm.condo.model.entity.Fee;
@@ -11,6 +12,9 @@ import ktpm.condo.model.service.fee_service.IFeeService;
  */
 public class FeeController {
     private final IFeeService service = new FeeService();
+    public List<Fee> getOverdueUnpaidFees(LocalDate today) {
+        return service.getOverdueUnpaidFees(today);
+    }
 
     public List<Fee> getAllFees() {
         return service.getAll();

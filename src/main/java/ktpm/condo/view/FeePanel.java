@@ -83,10 +83,13 @@ public class FeePanel extends BasePanel {
         JPanel actionButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         JButton btnAddUnpaid = createButton("Thêm phí chưa thanh toán");
         JButton btnMarkPaid = createButton("Đánh dấu đã thanh toán");
-        JButton btnDelete = createButton("Xoá phí đã thanh toán");
+        JButton btnOverdue = createButton("📅 Phí quá hạn");
+        actionButtons.add(btnOverdue);
+
+
         actionButtons.add(btnAddUnpaid);
         actionButtons.add(btnMarkPaid);
-        actionButtons.add(btnDelete);
+
 
         // Nhóm nút quay lại bên phải
         JPanel backButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
@@ -103,11 +106,18 @@ public class FeePanel extends BasePanel {
         btnFilter.addActionListener(e -> applyFilter());
         btnAddUnpaid.addActionListener(e -> addUnpaidFee());
         btnMarkPaid.addActionListener(e -> markAsPaid());
-        btnDelete.addActionListener(e -> deletePaid());
+        btnOverdue.addActionListener(e -> {
+            parentFrame.setContentPane(new OverdueFeePanel(parentFrame));
+            parentFrame.revalidate();
+            parentFrame.repaint();
+        });
+
+
         btnBack.addActionListener(e -> goBack());
 
         loadData();
     }
+
 
     private JPanel createTablePanel(String title, JTable table) {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
@@ -221,21 +231,7 @@ public class FeePanel extends BasePanel {
         }
     }
 
-    private void deletePaid() {
-        int selected = tablePaid.getSelectedRow();
-        if (selected != -1) {
-            int id = (int) modelPaid.getValueAt(selected, 0);
-            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xoá phí này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                if (controller.deleteFee(id)) {
-                    JOptionPane.showMessageDialog(this, "Đã xoá.");
-                    loadData();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Xoá thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-    }
+
 
     private void goBack() {
         if (parentFrame != null) {

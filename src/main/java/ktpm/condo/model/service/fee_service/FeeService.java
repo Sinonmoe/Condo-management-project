@@ -1,7 +1,7 @@
 package ktpm.condo.model.service.fee_service;
 
 import java.util.List;
-
+import java.time.LocalDate;
 import ktpm.condo.model.dao.FeeDAO;
 import ktpm.condo.model.entity.Fee;
 
@@ -15,6 +15,11 @@ public class FeeService implements IFeeService {
     public List<Fee> getAll() {
         return dao.getAll();
     }
+    @Override
+    public List<Fee> getOverdueUnpaidFees(LocalDate today) {
+        return dao.getOverdueUnpaidFees(LocalDate.now());
+    }
+
 
     @Override
     public boolean add(Fee fee) {
