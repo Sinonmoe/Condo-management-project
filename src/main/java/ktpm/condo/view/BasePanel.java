@@ -48,35 +48,62 @@ public class BasePanel extends JPanel {
     }
 
     /**
-     * Tạo JButton với màu nền, font đậm và style như trong thiết kế.
+     * Tạo JButton với kích thước mặc định.
      */
     protected JButton createButton(String text) {
-        JButton button = new JButton(text);
+        return createButton(text, 120); // Gọi method với minWidth mặc định là 120
+    }
+
+    /**
+     * Tạo JButton với kích thước tùy chỉnh để hiển thị đầy đủ text.
+     */
+    protected JButton createButton(String text, int minWidth) {
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Vẽ nền với góc bo tròn
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                
+                // Vẽ text
+                g2.setColor(getForeground());
+                g2.setFont(getFont());
+                FontMetrics fm = g2.getFontMetrics();
+                int textX = (getWidth() - fm.stringWidth(getText())) / 2;
+                int textY = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+                g2.drawString(getText(), textX, textY);
+                
+                g2.dispose();
+            }
+        };
+        
         button.setFont(FONT_BOLD);
         button.setBackground(PRIMARY_COLOR);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
+        button.setContentAreaFilled(false); // Tắt vẽ nền mặc định
         
-        // Tự động tính toán kích thước button dựa trên text
+        // Tính toán kích thước button dựa trên text và minWidth
         FontMetrics fm = button.getFontMetrics(FONT_BOLD);
         int textWidth = fm.stringWidth(text);
-        int minWidth = Math.max(120, textWidth + 50); // Tối thiểu 120px, thêm 50px padding
-        button.setPreferredSize(new Dimension(minWidth, 45));
-        button.setMinimumSize(new Dimension(minWidth, 45));
-        
-        // Add rounded corners effect
-        button.setOpaque(true);
-        button.setBorderPainted(false);
+        int finalWidth = Math.max(minWidth, textWidth + 50); // Thêm 50px padding
+        button.setPreferredSize(new Dimension(finalWidth, 45));
+        button.setMinimumSize(new Dimension(finalWidth, 45));
         
         // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(PRIMARY_COLOR.darker());
+                button.repaint();
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(PRIMARY_COLOR);
+                button.repaint();
             }
         });
         

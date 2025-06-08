@@ -19,6 +19,7 @@ ktpm\condo\controller\FacilityController.class
 ktpm\condo\model\service\facility_service\FacilityService.class
 ktpm\condo\Main.class
 ktpm\condo\model\dao\TestDBConnection.class
+ktpm\condo\view\BasePanel$2.class
 ktpm\condo\controller\household_controller\CitizenController.class
 ktpm\condo\model\dao\household_dao\CitizenDAO.class
 ktpm\condo\view\BasePanel.class
