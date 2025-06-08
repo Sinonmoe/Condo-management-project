@@ -5,12 +5,14 @@ ktpm\condo\model\dao\FeeDAO.class
 ktpm\condo\view\BasePanel$1.class
 ktpm\condo\model\dao\facility_dao\FacilityDAO.class
 ktpm\condo\model\service\household_service\IHouseholdService.class
+ktpm\condo\view\FeePanel$2.class
 ktpm\condo\view\household_view\HouseholdPanel.class
 ktpm\condo\model\service\facility_service\FacilityBookingService.class
 ktpm\condo\view\DashboardPanel.class
 ktpm\condo\model\dao\DBConnection.class
 ktpm\condo\model\entity\Household.class
 ktpm\condo\model\service\report_service\ReportService.class
+ktpm\condo\view\FeePanel$1.class
 ktpm\condo\model\dao\facility_dao\FacilityBookingDAO.class
 ktpm\condo\model\entity\Fee.class
 ktpm\condo\view\facility_panel\AddBookingPanel.class
@@ -20,6 +22,7 @@ ktpm\condo\model\service\facility_service\FacilityService.class
 ktpm\condo\Main.class
 ktpm\condo\model\dao\TestDBConnection.class
 ktpm\condo\view\BasePanel$2.class
+ktpm\condo\view\FeePanel$3.class
 ktpm\condo\controller\household_controller\CitizenController.class
 ktpm\condo\model\dao\household_dao\CitizenDAO.class
 ktpm\condo\view\BasePanel.class
