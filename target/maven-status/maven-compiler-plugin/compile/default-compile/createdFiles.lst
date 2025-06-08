@@ -20,6 +20,7 @@ ktpm\condo\view\ReportPanel.class
 ktpm\condo\model\service\fee_service\IFeeService.class
 ktpm\condo\view\household_view\AddHouseholdDialog$2.class
 ktpm\condo\view\DashboardPanel$1.class
+ktpm\condo\view\facility_panel\AddBookingPanel$1.class
 ktpm\condo\view\FeePanel.class
 ktpm\condo\model\service\household_service\IHouseholdService.class
 ktpm\condo\view\household_view\AddHouseholdDialog.class
