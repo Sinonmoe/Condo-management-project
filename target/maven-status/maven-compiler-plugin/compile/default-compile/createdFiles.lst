@@ -2,6 +2,7 @@ ktpm\condo\view\FeePanel.class
 ktpm\condo\view\OverdueFeePanel.class
 ktpm\condo\model\service\facility_service\IFacilityBookingService.class
 ktpm\condo\model\dao\FeeDAO.class
+ktpm\condo\view\BasePanel$1.class
 ktpm\condo\model\dao\facility_dao\FacilityDAO.class
 ktpm\condo\model\service\household_service\IHouseholdService.class
 ktpm\condo\view\household_view\HouseholdPanel.class
