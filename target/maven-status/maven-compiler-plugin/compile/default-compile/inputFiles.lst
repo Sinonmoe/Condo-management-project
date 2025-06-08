@@ -5,6 +5,7 @@ D:\Condo-management-project\src\main\java\ktpm\condo\view\household_view\Househo
 D:\Condo-management-project\src\main\java\ktpm\condo\model\dao\facility_dao\FacilityDAO.java
 D:\Condo-management-project\src\main\java\ktpm\condo\model\entity\Fee.java
 D:\Condo-management-project\src\main\java\ktpm\condo\model\entity\FacilityBooking.java
+D:\Condo-management-project\src\main\java\ktpm\condo\view\household_view\AddHouseholdDialog.java
 D:\Condo-management-project\src\main\java\ktpm\condo\model\service\report_service\ReportService.java
 D:\Condo-management-project\src\main\java\ktpm\condo\model\service\household_service\ICitizenService.java
 D:\Condo-management-project\src\main\java\ktpm\condo\controller\ReportController.java

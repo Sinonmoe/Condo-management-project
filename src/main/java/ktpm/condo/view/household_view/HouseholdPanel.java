@@ -91,25 +91,47 @@ public class HouseholdPanel extends BasePanel {
     }
 
     /**
-     * Hiển thị hộp thoại thêm hộ khẩu mới.
+     * Hiển thị dialog thêm hộ khẩu mới với giao diện đẹp.
      */
     private void addHousehold() {
-        JTextField tfApartment = createTextField(15);
-        JTextField tfCode = createTextField(15);
-
-        JPanel panel = new JPanel(new GridLayout(0, 1));
-        panel.add(createLabel("Căn hộ:"));
-        panel.add(tfApartment);
-        panel.add(createLabel("Mã hộ khẩu:"));
-        panel.add(tfCode);
-
-        int result = JOptionPane.showConfirmDialog(this, panel, "Thêm hộ khẩu", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            if (controller.addHousehold(tfApartment.getText(), tfCode.getText())) {
-                JOptionPane.showMessageDialog(this, "Đã thêm thành công.");
+        AddHouseholdDialog dialog = new AddHouseholdDialog(parentFrame);
+        dialog.setVisible(true);
+        
+        if (dialog.isConfirmed()) {
+            String apartment = dialog.getApartmentText();
+            String code = dialog.getHouseholdCodeText();
+            
+            if (controller.addHousehold(apartment, code)) {
+                // Hiển thị thông báo thành công với style đẹp
+                String successMessage = String.format(
+                    "✅ Đã thêm hộ khẩu thành công!\n\n" +
+                    "📍 Căn hộ: %s\n" +
+                    "🏷️ Mã hộ: %s\n\n" +
+                    "Hộ khẩu đã được thêm vào hệ thống.",
+                    apartment, code
+                );
+                
+                JOptionPane.showMessageDialog(this, 
+                    successMessage, 
+                    "Thành công", 
+                    JOptionPane.INFORMATION_MESSAGE
+                );
                 loadData();
             } else {
-                JOptionPane.showMessageDialog(this, "Thêm thất bại hoặc dữ liệu không hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                // Hiển thị thông báo lỗi với style đẹp
+                String errorMessage = 
+                    "❌ Thêm hộ khẩu thất bại!\n\n" +
+                    "Có thể do:\n" +
+                    "• Căn hộ đã tồn tại trong hệ thống\n" +
+                    "• Mã hộ khẩu đã được sử dụng\n" +
+                    "• Lỗi kết nối cơ sở dữ liệu\n\n" +
+                    "Vui lòng kiểm tra lại thông tin và thử lại.";
+                
+                JOptionPane.showMessageDialog(this, 
+                    errorMessage, 
+                    "Lỗi", 
+                    JOptionPane.ERROR_MESSAGE
+                );
             }
         }
     }
@@ -121,17 +143,65 @@ public class HouseholdPanel extends BasePanel {
         int selectedRow = table.getSelectedRow();
         if (selectedRow != -1) {
             int id = (int) tableModel.getValueAt(selectedRow, 0);
-            int confirm = JOptionPane.showConfirmDialog(this, "Xoá hộ khẩu này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+            String apartment = (String) tableModel.getValueAt(selectedRow, 1);
+            String householdCode = (String) tableModel.getValueAt(selectedRow, 2);
+            int memberCount = (int) tableModel.getValueAt(selectedRow, 3);
+            
+            // Tạo thông báo xác nhận với thông tin chi tiết
+            String confirmMessage = String.format(
+                "⚠️ Bạn có chắc chắn muốn xoá hộ khẩu này?\n\n" +
+                "📍 Căn hộ: %s\n" +
+                "🏷️ Mã hộ: %s\n" +
+                "👥 Số thành viên: %d\n\n" +
+                "⚠️ Lưu ý: Việc xoá sẽ không thể hoàn tác!",
+                apartment, householdCode, memberCount
+            );
+            
+            int confirm = JOptionPane.showConfirmDialog(
+                this, 
+                confirmMessage, 
+                "Xác nhận xoá hộ khẩu", 
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+            );
+            
             if (confirm == JOptionPane.YES_OPTION) {
                 if (controller.deleteHousehold(id)) {
-                    JOptionPane.showMessageDialog(this, "Đã xoá.");
+                    String successMessage = String.format(
+                        "✅ Đã xoá hộ khẩu thành công!\n\n" +
+                        "Căn hộ %s (Mã: %s) đã được xoá khỏi hệ thống.",
+                        apartment, householdCode
+                    );
+                    
+                    JOptionPane.showMessageDialog(this, 
+                        successMessage, 
+                        "Xoá thành công", 
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
                     loadData();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Không thể xoá.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    String errorMessage = 
+                        "❌ Không thể xoá hộ khẩu!\n\n" +
+                        "Có thể do:\n" +
+                        "• Hộ khẩu đang có ràng buộc dữ liệu\n" +
+                        "• Lỗi kết nối cơ sở dữ liệu\n" +
+                        "• Hộ khẩu không tồn tại\n\n" +
+                        "Vui lòng kiểm tra lại và thử lại.";
+                    
+                    JOptionPane.showMessageDialog(this, 
+                        errorMessage, 
+                        "Lỗi", 
+                        JOptionPane.ERROR_MESSAGE
+                    );
                 }
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hộ khẩu để xoá.");
+            JOptionPane.showMessageDialog(this, 
+                "⚠️ Vui lòng chọn một hộ khẩu để xoá!\n\n" +
+                "Nhấp vào một dòng trong bảng để chọn hộ khẩu cần xoá.",
+                "Chưa chọn hộ khẩu", 
+                JOptionPane.WARNING_MESSAGE
+            );
         }
     }
 
@@ -142,13 +212,25 @@ public class HouseholdPanel extends BasePanel {
         int selectedRow = table.getSelectedRow();
         if (selectedRow != -1) {
             int householdId = (int) tableModel.getValueAt(selectedRow, 0);
-            JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "Nhân khẩu hộ " + householdId, true);
+            String apartment = (String) tableModel.getValueAt(selectedRow, 1);
+            String householdCode = (String) tableModel.getValueAt(selectedRow, 2);
+            
+            JDialog dialog = new JDialog(
+                (JFrame) SwingUtilities.getWindowAncestor(this), 
+                String.format("Nhân khẩu - Căn hộ %s (%s)", apartment, householdCode), 
+                true
+            );
             dialog.setSize(600, 400);
             dialog.setLocationRelativeTo(null);
             dialog.setContentPane(new CitizenPanel(householdId, this));
             dialog.setVisible(true);
         } else {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hộ khẩu để xem nhân khẩu.");
+            JOptionPane.showMessageDialog(this, 
+                "⚠️ Vui lòng chọn một hộ khẩu để xem nhân khẩu!\n\n" +
+                "Nhấp vào một dòng trong bảng để chọn hộ khẩu cần xem.",
+                "Chưa chọn hộ khẩu", 
+                JOptionPane.WARNING_MESSAGE
+            );
         }
     }
 }
