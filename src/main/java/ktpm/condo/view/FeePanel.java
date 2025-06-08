@@ -62,13 +62,13 @@ public class FeePanel extends BasePanel {
         modelUnpaid = new DefaultTableModel(new Object[]{"ID", "Hộ", "Loại", "Số tiền", "Hạn nộp"}, 0);
         tableUnpaid = createTable(modelUnpaid);
         styleTable(tableUnpaid);
-        JPanel panelUnpaid = createTablePanel("📌 Những khoản chưa đóng", tableUnpaid);
+        JPanel panelUnpaid = createTablePanel(" Những khoản chưa đóng", tableUnpaid);
 
         // Bảng khoản đã đóng
         modelPaid = new DefaultTableModel(new Object[]{"ID", "Hộ", "Loại", "Số tiền", "Hạn nộp"}, 0);
         tablePaid = createTable(modelPaid);
         styleTable(tablePaid);
-        JPanel panelPaid = createTablePanel("✅ Những khoản đã đóng", tablePaid);
+        JPanel panelPaid = createTablePanel(" Những khoản đã đóng", tablePaid);
 
         center.add(panelUnpaid);
         center.add(Box.createVerticalStrut(15)); // khoảng cách
@@ -83,7 +83,7 @@ public class FeePanel extends BasePanel {
         JPanel actionButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         JButton btnAddUnpaid = createButton("Thêm phí chưa thanh toán");
         JButton btnMarkPaid = createButton("Đánh dấu đã thanh toán");
-        JButton btnOverdue = createButton("📅 Phí quá hạn");
+        JButton btnOverdue = createButton(" Phí quá hạn");
         actionButtons.add(btnOverdue);
 
 

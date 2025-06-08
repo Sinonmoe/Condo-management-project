@@ -22,7 +22,7 @@ public class OverdueFeePanel extends BasePanel {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        JLabel title = new JLabel("📅 Danh sách phí quá hạn chưa thanh toán");
+        JLabel title = new JLabel(" Danh sách phí quá hạn chưa thanh toán");
         title.setFont(new Font("Arial", Font.BOLD, 16));
         add(title, BorderLayout.NORTH);
 
